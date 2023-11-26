@@ -9,7 +9,7 @@ abstract class Lista{
   Proceso ultimoAgregado;
 
   int contador = 1;
-  private List<IOProceso> procesosObservadores = new ArrayList<>();
+  private List<Proceso> procesosObservadores = new ArrayList<>();
 
   public Lista() {
     this.procesoCabeza = new Proceso(tamano);
@@ -23,6 +23,7 @@ abstract class Lista{
     procesoCabeza.setSiguiente(procesoAtendido.getSiguiente());
     this.tamano--;
 
+    this.eliminarObservador(procesoAtendido);
     return procesoAtendido;
   }
 
@@ -36,6 +37,7 @@ abstract class Lista{
       }
       procesoAuxiliar = procesoAuxiliar.getSiguiente();
     }
+    this.eliminarObservador(procesoRemover);
   }
 
   public Proceso getUltimoEnLista(){
@@ -63,7 +65,7 @@ abstract class Lista{
     String lista = "";
     Proceso procesoAuxiliar = procesoCabeza;
     while (procesoAuxiliar.getSiguiente() != procesoCabeza) {
-      lista += " "+procesoAuxiliar.getSiguiente().getIdProceso();
+      lista += " "+procesoAuxiliar.getSiguiente().getNombreProceso();
       procesoAuxiliar = procesoAuxiliar.getSiguiente();
     }
 
@@ -79,19 +81,29 @@ abstract class Lista{
   }
 
 
-  public void agregarObservador(IOProceso observador) {
-    procesosObservadores.add(observador);
+  public void agregarObservador(Proceso observador) {
+    if(observador.getNombreCola() != "RR"){
+      procesosObservadores.add(observador);
+    }
+
   }
 
-  public void eliminarObservador(IOProceso observador) {
-    procesosObservadores.remove(observador);
+  public void eliminarObservador(Proceso observadorEliminar) {
+    for (Proceso observador : procesosObservadores) {
+      if(observadorEliminar.getNombreProceso() == observador.getNombreProceso()){
+        procesosObservadores.remove(observador);
+        System.out.println("Observador removido");
+      }
+    }
   }
 
   public void notificarEnvejecimientoObservadores() {
-    for (IOProceso observador : procesosObservadores) {
+    for (Proceso observador : procesosObservadores) {
       observador.actualizarEnvejecimiento();
     }
   }
 
-
+  public int getTamano() {
+    return tamano;
+  }
 }

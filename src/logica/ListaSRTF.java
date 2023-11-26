@@ -17,6 +17,7 @@ public class ListaSRTF extends Lista{
     if (this.getProcesoCabeza().getSiguiente() == this.getProcesoCabeza()) {
       this.getProcesoCabeza().setSiguiente(procesoNuevo);
       procesoNuevo.setSiguiente(this.getProcesoCabeza());
+      this.agregarObservador(procesoNuevo);
       return procesoNuevo;
     }
 
@@ -31,12 +32,14 @@ public class ListaSRTF extends Lista{
       else{
         procesoAnterior.setSiguiente(procesoNuevo);
         procesoNuevo.setSiguiente(procesoActual);
+        this.agregarObservador(procesoNuevo);
         return procesoNuevo;
       }
     }
     procesoAnterior.setSiguiente(procesoNuevo);
     procesoNuevo.setSiguiente(this.getProcesoCabeza());
 
+    this.agregarObservador(procesoNuevo);
     return procesoNuevo;
   }
 
@@ -51,6 +54,7 @@ public class ListaSRTF extends Lista{
     if (this.getProcesoCabeza().getSiguiente() == this.getProcesoCabeza()) {
       this.getProcesoCabeza().setSiguiente(procesoNuevo);
       procesoNuevo.setSiguiente(this.getProcesoCabeza());
+      this.agregarObservador(procesoNuevo);
       return procesoNuevo;
     }
 
@@ -65,12 +69,14 @@ public class ListaSRTF extends Lista{
       else{
         procesoAnterior.setSiguiente(procesoNuevo);
         procesoNuevo.setSiguiente(procesoActual);
+        this.agregarObservador(procesoNuevo);
         return procesoNuevo;
       }
     }
     procesoAnterior.setSiguiente(procesoNuevo);
     procesoNuevo.setSiguiente(this.getProcesoCabeza());
 
+    this.agregarObservador(procesoNuevo);
     return procesoNuevo;
   }
 

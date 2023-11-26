@@ -12,6 +12,8 @@ public class ListaFCFS extends Lista{
     procesoAuxiliar.setSiguiente(procesoNuevo);
     procesoNuevo.setSiguiente(this.getProcesoCabeza());
 
+    this.agregarObservador(procesoNuevo);
+
     return procesoNuevo;
   }
 
@@ -23,6 +25,8 @@ public class ListaFCFS extends Lista{
     }
     procesoAuxiliar.setSiguiente(procesoNuevo);
     procesoNuevo.setSiguiente(this.getProcesoCabeza());
+
+    this.agregarObservador(procesoNuevo);
 
     return procesoNuevo;
   }

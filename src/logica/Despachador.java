@@ -4,50 +4,70 @@ public class Despachador {
     private ListaRR listaColaRR = new ListaRR();
     private ListaFCFS listaColaFCFS = new ListaFCFS();
     private ListaSRTF listaColaSRTF = new ListaSRTF();
+    private Proceso ultimoProcesoInsertado;
+    int contadorProcesos = 1;
 
     public Proceso getProceso(){
         Proceso procesoRetorno;
-
         if(listaColaRR.getProcesoCabeza().getSiguiente() != listaColaRR.getProcesoCabeza()){
             procesoRetorno = listaColaRR.atender();
             return procesoRetorno;
         }
-
         if(listaColaFCFS.getProcesoCabeza().getSiguiente() != listaColaFCFS.getProcesoCabeza()){
             procesoRetorno = listaColaFCFS.atender();
             return procesoRetorno;
         }
-
-        if(listaColaFCFS.getProcesoCabeza().getSiguiente() != listaColaFCFS.getProcesoCabeza()){
-            procesoRetorno = listaColaFCFS.atender();
+        if(listaColaSRTF.getProcesoCabeza().getSiguiente() != listaColaSRTF.getProcesoCabeza()){
+            procesoRetorno = listaColaSRTF.atender();
             return procesoRetorno;
         }
-
         return null;
     }
 
     public Proceso insertarProcesoAleatorio(){
         int numeroAleatorio = new java.util.Random().nextInt(3) + 1;
 
-        Proceso procesoInsertado = null;
+        Proceso procesoInsertado = new Proceso(this.contadorProcesos);
 
         switch (numeroAleatorio){
             case 1:
-                procesoInsertado = listaColaRR.insertar();
+                listaColaRR.insertar(procesoInsertado);
+                procesoInsertado.setNombreCola("RR");
                 break;
             case 2:
-                procesoInsertado = listaColaFCFS.insertar();
+                listaColaFCFS.insertar(procesoInsertado);
+                procesoInsertado.setNombreCola("FCFS");
                 break;
             case 3:
-                procesoInsertado = listaColaSRTF.insertar();
+                listaColaSRTF.insertar(procesoInsertado);
+                procesoInsertado.setNombreCola("SRTF");
                 break;
             default:
                 System.out.println("Numero no esperado.");
                 break;
         }
-
+        this.contadorProcesos++;
         return procesoInsertado;
+    }
 
+    public boolean insertarProcesoEspecifico(Proceso procesoInsertar){
+        String nombreCola = procesoInsertar.getNombreCola();
+
+        switch (nombreCola){
+            case "RR":
+                listaColaRR.insertar(procesoInsertar);
+                break;
+            case "FCFS":
+                listaColaFCFS.insertar(procesoInsertar);
+                break;
+            case "SRTF":
+                listaColaSRTF.insertar(procesoInsertar);
+                break;
+            default:
+                System.out.println("Nombre no esperado.");
+                break;
+        }
+        return true;
     }
 
     public void actualizarEnvejecimiento(){
@@ -60,31 +80,75 @@ public class Despachador {
         Proceso procesoAuxiliar;
 
         //Validar envejecimiento cola SRTF (Cola 3)
-        procesoAuxiliar = listaColaSRTF.getProcesoCabeza();
-        while (procesoAuxiliar.getSiguiente() != listaColaSRTF.getProcesoCabeza()) {
+        procesoAuxiliar = listaColaSRTF.getProcesoCabeza().getSiguiente();
+        while (procesoAuxiliar != listaColaSRTF.getProcesoCabeza()) {
+
+            boolean esEnvejecido = false;
 
             if(procesoAuxiliar.getTiempoEnvejecimiento() == 0){
-                listaColaSRTF.atender(procesoAuxiliar); // Se quita el proceso de la cola 3
-                listaColaFCFS.insertar(procesoAuxiliar); // Se inserta en la cola 2
+                System.out.println("Proceso auxiliar: "+procesoAuxiliar.getNombreProceso());
+                listaColaSRTF.atender(procesoAuxiliar);
+                listaColaFCFS.insertar(procesoAuxiliar);
+                 // Se inserta en la cola 2 y se quita de la 3
+                listaColaSRTF.imprimirLista();
+                listaColaFCFS.imprimirLista();
                 procesoAuxiliar.setTiempoEnvejecimiento(10); // Se reinicia el tiempo de envejecimiento
                 procesoAuxiliar.setNombreCola("FCFS"); //Se cambia el nombre de la cola a la que pertenece
+                System.out.println("Moviendo de cola SRTF a FCFS");
+                esEnvejecido=true;
             }
-            procesoAuxiliar = procesoAuxiliar.getSiguiente();
+            if(esEnvejecido){
+                procesoAuxiliar=listaColaSRTF.getProcesoCabeza().getSiguiente();
+            }
+            else{
+                procesoAuxiliar = procesoAuxiliar.getSiguiente();
+            }
+
         }
 
 
         //Validar envejecimiento cola FCFS
-        procesoAuxiliar = listaColaFCFS.getProcesoCabeza();
-        while (procesoAuxiliar.getSiguiente() != listaColaFCFS.getProcesoCabeza()) {
+        procesoAuxiliar = listaColaFCFS.getProcesoCabeza().getSiguiente();
+        while (procesoAuxiliar != listaColaFCFS.getProcesoCabeza()) {
+
+            boolean esEnvejecido = false;
 
             if(procesoAuxiliar.getTiempoEnvejecimiento() == 0){
-                listaColaFCFS.atender(procesoAuxiliar); // Se quita el proceso de la cola 2
-                listaColaRR.insertar(procesoAuxiliar); // Se inserta en la cola 1
+                System.out.println("Proceso auxiliar: "+procesoAuxiliar.getNombreProceso());
+                listaColaFCFS.atender(procesoAuxiliar);
+                listaColaRR.insertar(procesoAuxiliar);
+                // Se inserta en la cola 2 y se quita de la 3
+                listaColaFCFS.imprimirLista();
+                listaColaRR.imprimirLista();
                 procesoAuxiliar.setTiempoEnvejecimiento(10); // Se reinicia el tiempo de envejecimiento
                 procesoAuxiliar.setNombreCola("RR"); //Se cambia el nombre de la cola a la que pertenece
+                System.out.println("Moviendo de cola FCFS a RR");
+                esEnvejecido=true;
             }
-            procesoAuxiliar = procesoAuxiliar.getSiguiente();
+            if(esEnvejecido){
+                procesoAuxiliar=listaColaFCFS.getProcesoCabeza().getSiguiente();
+            }
+            else{
+                procesoAuxiliar = procesoAuxiliar.getSiguiente();
+            }
+
         }
+    }
+
+    public boolean checkProcesoMayorPrioridad(Proceso proceso){
+        String nombreCola = proceso.getNombreCola();
+
+        if(nombreCola == "SRTF"){
+            if(this.listaColaFCFS.getTamano() > 0){
+                return true;
+            }
+        }
+        else if(nombreCola=="FCFS"){
+            if(this.listaColaRR.getTamano() > 0){
+                return true;
+            }
+        }
+        return false;
     }
 
     public ListaRR getListaColaRR() {

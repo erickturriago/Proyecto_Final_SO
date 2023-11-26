@@ -22,12 +22,9 @@ public class ControladorVentanaPrincipal implements ActionListener {
             if(boton.getText().equals("AGREGAR")){
                 ventana.getModelo().agregarProceso();
             }
-            if(boton.getText().equals("ATENDER")){
-                ventana.getModelo().atenderCliente();
-            }
             if(boton.getText().equals("INICIAR") || boton.getText().equals("DETENER")){
                 ventana.getModelo().setSistemaActivo(!ventana.getModelo().isSistemaActivo());
-                //ventana.getModelo().iniciarAtencion();
+                ventana.getModelo().iniciarAtencion();
                 //ventana.getModelo().iniciarPintarCola();
                 //ventana.getModelo().iniciarPintarTabla();
                 //ventana.getModelo().iniciarDiagramaGantt();

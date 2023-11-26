@@ -38,6 +38,7 @@ public class VentanaPrincipal extends ApplicationFrame {
     JLabel labelAccion;
     JLabel labelSeccionCritica;
     JLabel labelSemaforo;
+    JLabel labelCola1,labelCola2,labelCola3,labelColaTiempos,labelColaBloqueados;
 
     private JLabel labelContadorCiclo;
     public VentanaPrincipal(Modelo modelo) {
@@ -100,7 +101,7 @@ public class VentanaPrincipal extends ApplicationFrame {
         this.labelSemaforo = new JLabel();
         this.labelSemaforo.setBounds(910,140,150,200);
         this.labelSemaforo.setOpaque(true);
-        this.labelSemaforo.setIcon(new ImageIcon(getClass().getResource("/imagenes/semaforo_rojo.png")));
+        this.labelSemaforo.setIcon(new ImageIcon(getClass().getResource("/imagenes/semaforo_verde.png")));
 
         //Label
         this.labelCajero = new JLabel();
@@ -125,6 +126,30 @@ public class VentanaPrincipal extends ApplicationFrame {
         this.labelSeccionCritica.setBounds(440,730,120,40);
         this.labelSeccionCritica.setOpaque(true);
         this.labelSeccionCritica.setBackground(Color.green);
+
+        this.labelCola1 = new JLabel();
+        this.labelCola1.setBounds(210,590,120,40);
+        this.labelCola1.setFont(this.fontLabel);
+        this.labelCola1.setHorizontalTextPosition(SwingConstants.CENTER);
+        this.labelCola1.setText("Cola 1");
+
+        this.labelCola2 = new JLabel();
+        this.labelCola2.setBounds(688,590,120,40);
+        this.labelCola2.setFont(this.fontLabel);
+        this.labelCola2.setHorizontalTextPosition(SwingConstants.CENTER);
+        this.labelCola2.setText("Cola 2");
+
+        this.labelCola3 = new JLabel();
+        this.labelCola3.setBounds(1156,590,120,40);
+        this.labelCola3.setFont(this.fontLabel);
+        this.labelCola3.setHorizontalTextPosition(SwingConstants.CENTER);
+        this.labelCola3.setText("Cola 3");
+
+        this.labelColaBloqueados = new JLabel();
+        this.labelColaBloqueados.setBounds(1574,590,250,40);
+        this.labelColaBloqueados.setFont(this.fontLabel);
+        this.labelColaBloqueados.setHorizontalTextPosition(SwingConstants.CENTER);
+        this.labelColaBloqueados.setText("Cola Bloqueados");
 
 
         //Diagrama de Gant
@@ -183,18 +208,22 @@ public class VentanaPrincipal extends ApplicationFrame {
         modelTablaCola1.addColumn("Proceso");
         modelTablaCola1.addColumn("T.Llegada");
         modelTablaCola1.addColumn("Rafaga");
+        modelTablaCola1.addColumn("Envejecimiento");
 
         modelTablaCola2.addColumn("Proceso");
         modelTablaCola2.addColumn("T.Llegada");
         modelTablaCola2.addColumn("Rafaga");
+        modelTablaCola2.addColumn("Envejecimiento");
 
         modelTablaCola3.addColumn("Proceso");
         modelTablaCola3.addColumn("T.Llegada");
         modelTablaCola3.addColumn("Rafaga");
+        modelTablaCola3.addColumn("Envejecimiento");
 
         modelTablaBloqueado.addColumn("Proceso");
         modelTablaBloqueado.addColumn("T. Bloqueo");
         modelTablaBloqueado.addColumn("Rafaga");
+        modelTablaBloqueado.addColumn("Envejecimiento");
 
         tablaCola1 = new JTable(modelTablaCola1);
         tablaCola2 = new JTable(modelTablaCola2);
@@ -217,9 +246,9 @@ public class VentanaPrincipal extends ApplicationFrame {
         TableColumnModel columnModelBloqueados = tablaBloqueados.getColumnModel();
 
         for (int i = 0; i < tablaCola1.getColumnCount(); i++) {
-            columnModelCola1.getColumn(i).setPreferredWidth(132);
-            columnModelCola2.getColumn(i).setPreferredWidth(132);
-            columnModelCola3.getColumn(i).setPreferredWidth(132);
+            columnModelCola1.getColumn(i).setPreferredWidth(100);
+            columnModelCola2.getColumn(i).setPreferredWidth(100);
+            columnModelCola3.getColumn(i).setPreferredWidth(100);
             columnModelBloqueados.getColumn(i).setPreferredWidth(132);
             tablaCola1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
             tablaCola2.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
@@ -248,11 +277,15 @@ public class VentanaPrincipal extends ApplicationFrame {
         this.add(scrollPaneBloqueados);
 
         this.add(this.scrollPaneTiempos);
-        this.add(this.labelCajero);
+        //this.add(this.labelCajero);
 
         this.add(this.btnAgregarProceso);
         this.add(this.btnIniciarDetener);
         this.add(this.labelSemaforo);
+        this.add(this.labelCola1);
+        this.add(this.labelCola2);
+        this.add(this.labelCola3);
+        this.add(this.labelColaBloqueados);
         //this.panelTabla.add(this.scrollPaneBloqueados);
         //this.panelTabla.add(this.btnAtender);
         //this.panelTabla.add(this.btnAgregarClientes);
@@ -270,6 +303,15 @@ public class VentanaPrincipal extends ApplicationFrame {
         //this.add(diagramaGantt);
 
         this.repaint();
+    }
+
+    public void actualizarSemaforo(String color){
+        if(color == "Verde"){
+            this.labelSemaforo.setIcon(new ImageIcon(getClass().getResource("/imagenes/semaforo_verde.png")));
+        }
+        if(color == "Rojo"){
+            this.labelSemaforo.setIcon(new ImageIcon(getClass().getResource("/imagenes/semaforo_rojo.png")));
+        }
     }
 
     public DefaultTableModel getModelTablaTiempos() {

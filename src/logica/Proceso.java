@@ -203,5 +203,7 @@ public class Proceso implements Cloneable,IOProceso{
   @Override
   public void actualizarEnvejecimiento() {
     this.tiempoEnvejecimiento--;
+    //System.out.println("Disminuyendo proceso "+nombreProceso+" cola: "+nombreCola);
+    //System.out.println("Proceso: "+this.nombreProceso +" Envejecimiento: "+this.tiempoEnvejecimiento);
   }
 }
