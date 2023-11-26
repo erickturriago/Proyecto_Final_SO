@@ -1,34 +1,34 @@
 package logica;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class Lista {
-  private Proceso procesoCajero;
-  private int tamano = 0;
-  private int contador = 0;
-  private Proceso ultimoAgregado;
+abstract class Lista{
+  private Proceso procesoCabeza;
+  int tamano = 0;
+  Proceso ultimoAgregado;
+
+  int contador = 1;
+  private List<IOProceso> procesosObservadores = new ArrayList<>();
 
   public Lista() {
-    this.procesoCajero = new Proceso(tamano);
-    this.procesoCajero.setSiguiente(procesoCajero);
+    this.procesoCabeza = new Proceso(tamano);
+    this.procesoCabeza.setSiguiente(procesoCabeza);
   }
 
-  public void insertar() {
-    tamano++;
-    Proceso procesoNuevo = new Proceso(++contador);
-    Proceso procesoAuxiliar = procesoCajero;
-    while (procesoAuxiliar.getSiguiente() != procesoCajero) {
-      procesoAuxiliar = procesoAuxiliar.getSiguiente();
-    }
-    procesoAuxiliar.setSiguiente(procesoNuevo);
-    procesoNuevo.setSiguiente(procesoCajero);
-    this.ultimoAgregado = procesoNuevo;
+  public abstract Proceso insertar();
 
+  public Proceso atender(){
+    Proceso procesoAtendido = procesoCabeza.getSiguiente();
+    procesoCabeza.setSiguiente(procesoAtendido.getSiguiente());
+    this.tamano--;
+
+    return procesoAtendido;
   }
 
   public void atender(Proceso procesoRemover){
-    Proceso procesoAuxiliar = procesoCajero;
-    while (procesoAuxiliar.getSiguiente() != procesoCajero) {
+    Proceso procesoAuxiliar = procesoCabeza;
+    while (procesoAuxiliar.getSiguiente() != procesoCabeza) {
       if(procesoAuxiliar.getSiguiente()==procesoRemover){
         procesoAuxiliar.setSiguiente(procesoRemover.getSiguiente());
         tamano--;
@@ -39,9 +39,9 @@ public class Lista {
   }
 
   public Proceso getUltimoEnLista(){
-    Proceso proceso = this.procesoCajero.getSiguiente();
-    if(proceso!=this.procesoCajero){
-      while(proceso.getSiguiente()!=this.procesoCajero){
+    Proceso proceso = this.procesoCabeza.getSiguiente();
+    if(proceso!=this.procesoCabeza){
+      while(proceso.getSiguiente()!=this.procesoCabeza){
         proceso=proceso.getSiguiente();
       }
       return proceso;
@@ -49,57 +49,48 @@ public class Lista {
     return null;
   }
 
-  public void insertar(Proceso procesoNuevo){
-    tamano++;
-    Proceso procesoAuxiliar = procesoCajero;
-    while (procesoAuxiliar.getSiguiente() != procesoCajero) {
-      procesoAuxiliar = procesoAuxiliar.getSiguiente();
-    }
-    procesoAuxiliar.setSiguiente(procesoNuevo);
-    procesoNuevo.setSiguiente(procesoCajero);
-    ultimoAgregado=procesoNuevo;
-  }
-
-  public ArrayList<Proceso> listarNodos(){
+  public ArrayList<Proceso> listarProcesos(){
     ArrayList<Proceso> procesos = new ArrayList<Proceso>();
-    Proceso procesoAuxiliar = procesoCajero;
-    while (procesoAuxiliar.getSiguiente() != procesoCajero) {
+    Proceso procesoAuxiliar = procesoCabeza;
+    while (procesoAuxiliar.getSiguiente() != procesoCabeza) {
       procesos.add(procesoAuxiliar.getSiguiente());
       procesoAuxiliar = procesoAuxiliar.getSiguiente();
     }
     return procesos;
   }
 
-  public void atender(){
-    Proceso procesoAtendido = procesoCajero.getSiguiente();
-    procesoCajero.setSiguiente(procesoAtendido.getSiguiente());
-    this.tamano--;
-  }
-
   public void imprimirLista(){
     String lista = "";
-    Proceso procesoAuxiliar = procesoCajero;
-    while (procesoAuxiliar.getSiguiente() != procesoCajero) {
+    Proceso procesoAuxiliar = procesoCabeza;
+    while (procesoAuxiliar.getSiguiente() != procesoCabeza) {
       lista += " "+procesoAuxiliar.getSiguiente().getIdProceso();
       procesoAuxiliar = procesoAuxiliar.getSiguiente();
     }
 
     System.out.println(lista);
   }
-  public boolean isEmpty(){
-    return (this.procesoCajero.getSiguiente()==this.procesoCajero);
-  }
 
-  public int getTamano() {
-    return tamano;
-  }
-
-  public Proceso getProcesoCajero(){
-    return this.procesoCajero;
+  public Proceso getProcesoCabeza(){
+    return this.procesoCabeza;
   }
 
   public Proceso getUltimoAgregado() {
     return ultimoAgregado;
+  }
+
+
+  public void agregarObservador(IOProceso observador) {
+    procesosObservadores.add(observador);
+  }
+
+  public void eliminarObservador(IOProceso observador) {
+    procesosObservadores.remove(observador);
+  }
+
+  public void notificarEnvejecimientoObservadores() {
+    for (IOProceso observador : procesosObservadores) {
+      observador.actualizarEnvejecimiento();
+    }
   }
 
 

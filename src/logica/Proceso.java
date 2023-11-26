@@ -1,8 +1,9 @@
 package logica;
 
-public class Proceso implements Cloneable{
+public class Proceso implements Cloneable,IOProceso{
   private Proceso siguiente;
   private String nombreProceso;
+  private String nombreCola;
   private int idProceso,tiempoLlegada,rafaga,tiempoComienzo,tiempoFinal,tiempoRetorno,tiempoEspera;
   private String estado;
   private int rafagaRestante;
@@ -10,6 +11,7 @@ public class Proceso implements Cloneable{
   private int tiempoBloqueoTabla = 0;
   private int rafagaEjecutadaTotal = 0;
   private int rafagaEjecutadaParcial = 0;
+  private int tiempoEnvejecimiento = 10;
   private boolean quantumAlcanzado = false;
 
   public Proceso(int id){
@@ -20,6 +22,7 @@ public class Proceso implements Cloneable{
     this.tiempoLlegada = (int)(Math.random()*10+1);
     this.estado= "Listo";
     this.tiempoBloqueo=0;
+    this.tiempoEnvejecimiento = 10;
   }
 
   public int getIdNodo() {
@@ -154,6 +157,22 @@ public class Proceso implements Cloneable{
     this.quantumAlcanzado = quantumAlcanzado;
   }
 
+  public String getNombreCola() {
+    return nombreCola;
+  }
+
+  public int getTiempoEnvejecimiento() {
+    return tiempoEnvejecimiento;
+  }
+
+  public void setNombreCola(String nombreCola) {
+    this.nombreCola = nombreCola;
+  }
+
+  public void setTiempoEnvejecimiento(int tiempoEnvejecimiento) {
+    this.tiempoEnvejecimiento = tiempoEnvejecimiento;
+  }
+
   @Override
   public Object clone() {
     try {
@@ -181,4 +200,8 @@ public class Proceso implements Cloneable{
   }
 
 
+  @Override
+  public void actualizarEnvejecimiento() {
+    this.tiempoEnvejecimiento--;
+  }
 }

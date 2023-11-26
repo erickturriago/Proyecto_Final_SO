@@ -1,4 +1,4 @@
-import logica.Lista;
+
 import presentacion.Modelo;
 import presentacion.VentanaPrincipal;
 

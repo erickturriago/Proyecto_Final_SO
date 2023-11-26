@@ -3,7 +3,6 @@ package presentacion;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLOutput;
 
 public class ControladorVentanaPrincipal implements ActionListener {
 
@@ -21,7 +20,7 @@ public class ControladorVentanaPrincipal implements ActionListener {
         if(e.getSource() instanceof JButton){
             boton = (JButton) e.getSource();
             if(boton.getText().equals("AGREGAR")){
-                ventana.getModelo().agregarCliente();
+                ventana.getModelo().agregarProceso();
             }
             if(boton.getText().equals("ATENDER")){
                 ventana.getModelo().atenderCliente();

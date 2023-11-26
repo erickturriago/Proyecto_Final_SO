@@ -25,7 +25,7 @@ public class VentanaPrincipal extends ApplicationFrame {
     private JButton btnAgregarProceso;
     private JButton btnAtender;
     private JButton btnIniciarDetener;
-    DefaultTableModel modelTablaTiempos,modelTablaBloqueado,modelTablaColas;
+    DefaultTableModel modelTablaTiempos,modelTablaBloqueado,modelTablaCola1,modelTablaCola2,modelTablaCola3;
     JTable tablaCola1;
     JTable tablaCola2;
     JTable tablaCola3;
@@ -37,6 +37,7 @@ public class VentanaPrincipal extends ApplicationFrame {
     JLabel labelCajero;
     JLabel labelAccion;
     JLabel labelSeccionCritica;
+    JLabel labelSemaforo;
 
     private JLabel labelContadorCiclo;
     public VentanaPrincipal(Modelo modelo) {
@@ -94,6 +95,12 @@ public class VentanaPrincipal extends ApplicationFrame {
         this.txtCantClientes.setHorizontalAlignment(JTextField.CENTER);
         this.txtCantClientes.setText("1");
         this.txtCantClientes.setFont(this.fontButton);
+
+        //Label
+        this.labelSemaforo = new JLabel();
+        this.labelSemaforo.setBounds(910,140,150,200);
+        this.labelSemaforo.setOpaque(true);
+        this.labelSemaforo.setIcon(new ImageIcon(getClass().getResource("/imagenes/semaforo_rojo.png")));
 
         //Label
         this.labelCajero = new JLabel();
@@ -168,20 +175,37 @@ public class VentanaPrincipal extends ApplicationFrame {
         scrollPaneTiempos.setBounds(50,60,800,450);
 
         //Tablas colas y bloqueo
-        modelTablaColas = new DefaultTableModel();
+        modelTablaCola1 = new DefaultTableModel();
+        modelTablaCola2 = new DefaultTableModel();
+        modelTablaCola3 = new DefaultTableModel();
+        modelTablaBloqueado = new DefaultTableModel();
 
-        modelTablaColas.addColumn("Proceso");
-        modelTablaColas.addColumn("T.Llegada");
-        modelTablaColas.addColumn("Rafaga");
+        modelTablaCola1.addColumn("Proceso");
+        modelTablaCola1.addColumn("T.Llegada");
+        modelTablaCola1.addColumn("Rafaga");
 
-        tablaCola1 = new JTable(modelTablaColas);
-        tablaCola2 = new JTable(modelTablaColas);
-        tablaCola3 = new JTable(modelTablaColas);
-        tablaBloqueados = new JTable(modelTablaColas);
+        modelTablaCola2.addColumn("Proceso");
+        modelTablaCola2.addColumn("T.Llegada");
+        modelTablaCola2.addColumn("Rafaga");
+
+        modelTablaCola3.addColumn("Proceso");
+        modelTablaCola3.addColumn("T.Llegada");
+        modelTablaCola3.addColumn("Rafaga");
+
+        modelTablaBloqueado.addColumn("Proceso");
+        modelTablaBloqueado.addColumn("T. Bloqueo");
+        modelTablaBloqueado.addColumn("Rafaga");
+
+        tablaCola1 = new JTable(modelTablaCola1);
+        tablaCola2 = new JTable(modelTablaCola2);
+        tablaCola3 = new JTable(modelTablaCola3);
+        tablaBloqueados = new JTable(modelTablaBloqueado);
+
         tablaCola1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         tablaCola2.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         tablaCola3.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         tablaBloqueados.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
         tablaCola1.setBackground(Color.white);
         tablaCola2.setBackground(Color.white);
         tablaCola3.setBackground(Color.white);
@@ -228,6 +252,7 @@ public class VentanaPrincipal extends ApplicationFrame {
 
         this.add(this.btnAgregarProceso);
         this.add(this.btnIniciarDetener);
+        this.add(this.labelSemaforo);
         //this.panelTabla.add(this.scrollPaneBloqueados);
         //this.panelTabla.add(this.btnAtender);
         //this.panelTabla.add(this.btnAgregarClientes);
@@ -297,5 +322,17 @@ public class VentanaPrincipal extends ApplicationFrame {
 
     public JLabel getLabelContadorCiclo() {
         return labelContadorCiclo;
+    }
+
+    public DefaultTableModel getModelTablaCola1() {
+        return modelTablaCola1;
+    }
+
+    public DefaultTableModel getModelTablaCola2() {
+        return modelTablaCola2;
+    }
+
+    public DefaultTableModel getModelTablaCola3() {
+        return modelTablaCola3;
     }
 }
