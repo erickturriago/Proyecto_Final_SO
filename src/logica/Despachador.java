@@ -4,6 +4,7 @@ public class Despachador {
     private ListaRR listaColaRR = new ListaRR();
     private ListaFCFS listaColaFCFS = new ListaFCFS();
     private ListaSRTF listaColaSRTF = new ListaSRTF();
+    private ListaBloqueados listaBloqueados = new ListaBloqueados();
     private Proceso ultimoProcesoInsertado;
     int contadorProcesos = 1;
 
@@ -142,6 +143,18 @@ public class Despachador {
         }
         return false;
     }
+    
+    public void actualizarListaBloqueados() {
+    	Proceso procesoAux =listaBloqueados.getProcesoCabeza();
+    	System.out.println("tamano de la lista: " + listaBloqueados.getTamano());
+    	while(procesoAux.getSiguiente()!=listaBloqueados.getProcesoCabeza()) {
+    		procesoAux.setTiempoBloqueo(procesoAux.getTiempoBloqueo()-1);
+    		if(procesoAux.getTiempoBloqueo()==0) {
+    			insertarProcesoEspecifico(procesoAux);
+    		}
+    		procesoAux=procesoAux.getSiguiente();
+    	}
+    }
 
     public ListaRR getListaColaRR() {
         return listaColaRR;
@@ -153,5 +166,9 @@ public class Despachador {
 
     public ListaSRTF getListaColaSRTF() {
         return listaColaSRTF;
+    }
+    
+    public ListaBloqueados getListaBloqueados() {
+    	return listaBloqueados;
     }
 }

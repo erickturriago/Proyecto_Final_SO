@@ -192,6 +192,7 @@ public class Proceso implements Cloneable,IOProceso{
       cloned.tiempoBloqueoTabla = this.tiempoBloqueoTabla;
       cloned.rafagaEjecutadaTotal = this.rafagaEjecutadaTotal;
       cloned.rafagaEjecutadaParcial = this.rafagaEjecutadaParcial;
+      cloned.nombreCola = this.nombreCola;
       // Devuelve la copia del objeto
       return cloned;
     } catch (CloneNotSupportedException e) {

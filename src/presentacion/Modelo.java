@@ -78,6 +78,7 @@ public class Modelo implements Cloneable{
 
                         procesoActual.setRafagaEjecutadaParcial(0);
                         procesoActual.setRafagaRestante(procesoActual.getRafaga() - procesoActual.getRafagaEjecutadaTotal());
+                        procesoActual.setTiempoComienzo(contadorReloj);
 
                         procesosTabla.add(procesoActual);
                         pintarTabla();
@@ -91,18 +92,16 @@ public class Modelo implements Cloneable{
                             }
 
                             ventanaPrincipal.getLabelContadorCiclo().setText(""+contadorReloj);
-
+                            procesoActual.setEstado("En ejecución");
                             procesoActual.setRafagaEjecutadaTotal(procesoActual.getRafagaEjecutadaTotal()+1);
                             procesoActual.setRafagaEjecutadaParcial(procesoActual.getRafagaEjecutadaParcial()+1);
                             procesoActual.setRafagaRestante(procesoActual.getRafaga() - procesoActual.getRafagaEjecutadaTotal());
 
-                            contadorReloj++;
-                            System.out.println("Ciclo: "+(i+1));
-                            despachador.actualizarEnvejecimiento();
-                            pintarTabla();
+
 
                             //Comprobacion algoritmo RR (Cuantum)
                             if(nombreColaProceso == "RR"){
+                                System.out.println(procesoActual.getNombreProceso() + " expulsado ");
                                 if (procesoActual.getRafagaEjecutadaParcial() == 4 && procesoActual.getRafagaRestante()>0){
                                     procesoActual.setQuantumAlcanzado(true);
                                     procesoActual.setEstado("Expulsado");
@@ -112,11 +111,12 @@ public class Modelo implements Cloneable{
 
                             int randomBloqueo = (int)(Math.random()*100+1);
                             //System.out.println("For ciclo: "+(i+1));
-                            if(randomBloqueo % 27  == 0 && procesoActual.getRafagaRestante()>0){
+                            if(randomBloqueo % 7  == 0 && procesoActual.getRafagaRestante()>0){
                                 int tiempoBloqueo = (int)(Math.random()*8+4);
                                 procesoActual.setTiempoBloqueo(tiempoBloqueo);
                                 procesoActual.setEstado("Bloqueado");
                                 System.out.println("Bloqueado");
+                                despachador.getListaBloqueados().insertar((Proceso) procesoActual.clone());
                                 break;
                             }
 
@@ -127,7 +127,12 @@ public class Modelo implements Cloneable{
                                 break;
                             }
 
-
+                            contadorReloj++;
+                            System.out.println("Ciclo: "+(i+1));
+                            despachador.actualizarEnvejecimiento();
+                            despachador.actualizarListaBloqueados();
+                            pintarTabla();
+                            pintarDiagramaGantt();
                         }
                         //Calculos de tiempos
                         procesoActual.setTiempoFinal(procesoActual.getRafagaEjecutadaParcial() + procesoActual.getTiempoComienzo());
@@ -135,10 +140,10 @@ public class Modelo implements Cloneable{
                         procesoActual.setTiempoEspera(procesoActual.getTiempoRetorno() - procesoActual.getRafagaEjecutadaTotal());
 
                         if(procesoActual.getEstado() == "Bloqueado"){
-                            //despachador.lista.insertar(procesoActual);
+                            
                         }
                         else if(procesoActual.getEstado() == "Expulsado"){
-                            //insertarProcesoExpulsado(procesoActual);
+                        	
                         }
                         else{
                             procesoActual.setEstado("Terminado");
@@ -324,6 +329,17 @@ public class Modelo implements Cloneable{
                     procesosSRTF.get(i).getTiempoEnvejecimiento()
             });
         }
+        
+        ArrayList<Proceso> procesosBloqueados = despachador.getListaBloqueados().listarProcesos();
+        this.getVistaPrincipal().getModelTablaBloqueado().setRowCount(0);
+        for(int i = 0; i< procesosBloqueados.size(); i++) {
+        	this.getVistaPrincipal().getModelTablaBloqueado().addRow(new Object[] {
+        			procesosBloqueados.get(i).getNombreProceso(),
+        			procesosBloqueados.get(i).getTiempoBloqueo(),
+        			procesosBloqueados.get(i).getRafagaRestante(),
+        			procesosBloqueados.get(i).getTiempoEnvejecimiento()
+        	});
+        }
 
         this.getVistaPrincipal().getModelTablaTiempos().setRowCount(0);
         for(int i = 0; i< procesosTabla.size(); i++){
@@ -374,50 +390,49 @@ public class Modelo implements Cloneable{
         final TaskSeries s = new TaskSeries("");
         //System.out.println("tamano :"+s.getTasks().size());
         for(int i=0; i<procesosTabla.size(); i++){
-            //System.out.println("proceso :" + procesosIngresados.get(i)[0] + " estado: " + procesosIngresados.get(i)[7]);
+            //System.out.println("proceso :" + procesosTabla.get(i).getNombreProceso() + " estado: " + procesosTabla.get(i).getEstado());
         }
-        if(procesoActual!=null){
-            for(int i=0; i<procesosTabla.size(); i++){
-                System.out.println(procesosTabla.get(i).getNombreProceso() + " " + procesosTabla.get(i).getEstado());
-                if(procesosTabla.get(i).getEstado()=="Listo"){
-                    final Task t = new Task(""+procesosTabla.get(i).getNombreProceso(), new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), contadorReloj));
-                    final Task t1 = new Task("esperando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), contadorReloj));
-                    final Task t2 = new Task("ejecutando", new SimpleTimePeriod(0, 0));
-                    t.addSubtask(t1);
-                    t.addSubtask(t2);
-                    s.add(t);
-                }
-                if(procesosTabla.get(i).getEstado()=="En ejecución"){
-                    //System.out.println("Pintando proceso en ejecucion");
-                    final Task t = new Task(""+procesosTabla.get(i).getNombreProceso(), new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), contadorReloj));
-                    final Task t1 = new Task("esperando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), procesosTabla.get(i).getTiempoComienzo()));
-                    final Task t2 = new Task("ejecutando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoComienzo(), contadorReloj));
-                    t.addSubtask(t1);
-                    t.addSubtask(t2);
-                    s.add(t);
-                }
-                if(procesosTabla.get(i).getEstado()=="Bloqueado"){
-                    //System.out.println("Pintando proceso en ejecucion");
-                    final Task t = new Task(""+procesosTabla.get(i).getNombreProceso(), new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), procesosTabla.get(i).getTiempoFinal()));
-                    final Task t1 = new Task("esperando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), procesosTabla.get(i).getTiempoComienzo()));
-                    final Task t2 = new Task("ejecutando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoComienzo(), procesosTabla.get(i).getTiempoFinal()));
-                    System.out.println("rafaga ejecutada parcial del proceso Bloqueado: "+procesosTabla.get(i).getTiempoComienzo() + procesosTabla.get(i).getRafagaEjecutadaParcial());
-                    t.addSubtask(t1);
-                    t.addSubtask(t2);
-                    s.add(t);
-                }
-                if(procesosTabla.get(i).getEstado()=="Terminado" || procesosTabla.get(i).getEstado()=="Expulsado"){
-                    final Task t = new Task(""+procesosTabla.get(i).getNombreProceso(), new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), contadorReloj));
-                    final Task t1 = new Task("esperando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(),procesosTabla.get(i).getTiempoComienzo()));
-                    final Task t2 = new Task("ejecutando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoComienzo(), procesosTabla.get(i).getTiempoFinal()));
-                    t.addSubtask(t1);
-                    t.addSubtask(t2);
-                    s.add(t);
-                }
+        for(int i=0; i<procesosTabla.size(); i++){
+            System.out.println(procesosTabla.get(i).getNombreProceso() + " " + procesosTabla.get(i).getEstado());
+            if(procesosTabla.get(i).getEstado()=="Listo"){
+                final Task t = new Task(""+procesosTabla.get(i).getNombreProceso(), new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), contadorReloj));
+                final Task t1 = new Task("esperando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), contadorReloj));
+                final Task t2 = new Task("ejecutando", new SimpleTimePeriod(0, 0));
+                t.addSubtask(t1);
+                t.addSubtask(t2);
+                s.add(t);
             }
-
-            model.add(s);
+            if(procesosTabla.get(i).getEstado()=="En ejecución"){
+                //System.out.println("Pintando proceso en ejecucion");
+                final Task t = new Task(""+procesosTabla.get(i).getNombreProceso(), new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), contadorReloj));
+                final Task t1 = new Task("esperando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), procesosTabla.get(i).getTiempoComienzo()));
+                final Task t2 = new Task("ejecutando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoComienzo(), contadorReloj));
+                t.addSubtask(t1);
+                t.addSubtask(t2);
+                s.add(t);
+            }
+            if(procesosTabla.get(i).getEstado()=="Bloqueado"){
+                //System.out.println("Pintando proceso en ejecucion");
+                final Task t = new Task(""+procesosTabla.get(i).getNombreProceso(), new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), procesosTabla.get(i).getTiempoFinal()));
+                final Task t1 = new Task("esperando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), procesosTabla.get(i).getTiempoComienzo()));
+                final Task t2 = new Task("ejecutando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoComienzo(), procesosTabla.get(i).getTiempoFinal()));
+                System.out.println("rafaga ejecutada parcial del proceso Bloqueado: "+procesosTabla.get(i).getTiempoComienzo() + procesosTabla.get(i).getRafagaEjecutadaParcial());
+                t.addSubtask(t1);
+                t.addSubtask(t2);
+                s.add(t);
+            }
+            if(procesosTabla.get(i).getEstado()=="Terminado" || procesosTabla.get(i).getEstado()=="Expulsado"){
+                final Task t = new Task(""+procesosTabla.get(i).getNombreProceso(), new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), contadorReloj));
+                final Task t1 = new Task("esperando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(),procesosTabla.get(i).getTiempoComienzo()));
+                final Task t2 = new Task("ejecutando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoComienzo(), procesosTabla.get(i).getTiempoFinal()));
+                t.addSubtask(t1);
+                t.addSubtask(t2);
+                s.add(t);
+            }
         }
+
+        model.add(s);
+    
         //model.removeAll();
         return model;
     }
