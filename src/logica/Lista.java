@@ -33,11 +33,12 @@ abstract class Lista{
       if(procesoAuxiliar.getSiguiente()==procesoRemover){
         procesoAuxiliar.setSiguiente(procesoRemover.getSiguiente());
         tamano--;
+        eliminarObservador(procesoRemover);
         return;
       }
       procesoAuxiliar = procesoAuxiliar.getSiguiente();
     }
-    this.eliminarObservador(procesoRemover);
+
   }
 
   public Proceso getUltimoEnLista(){
@@ -83,18 +84,13 @@ abstract class Lista{
 
   public void agregarObservador(Proceso observador) {
     if(observador.getNombreCola() != "RR"){
-      procesosObservadores.add(observador);
+      getProcesosObservadores().add(observador);
     }
-
   }
 
+
   public void eliminarObservador(Proceso observadorEliminar) {
-    for (Proceso observador : procesosObservadores) {
-      if(observadorEliminar.getNombreProceso() == observador.getNombreProceso()){
-        procesosObservadores.remove(observador);
-        System.out.println("Observador removido");
-      }
-    }
+    getProcesosObservadores().remove(observadorEliminar);
   }
 
   public void notificarEnvejecimientoObservadores() {
@@ -105,5 +101,9 @@ abstract class Lista{
 
   public int getTamano() {
     return tamano;
+  }
+
+  public List<Proceso> getProcesosObservadores() {
+    return procesosObservadores;
   }
 }

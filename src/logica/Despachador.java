@@ -86,15 +86,11 @@ public class Despachador {
             boolean esEnvejecido = false;
 
             if(procesoAuxiliar.getTiempoEnvejecimiento() == 0){
-                System.out.println("Proceso auxiliar: "+procesoAuxiliar.getNombreProceso());
                 listaColaSRTF.atender(procesoAuxiliar);
                 listaColaFCFS.insertar(procesoAuxiliar);
-                 // Se inserta en la cola 2 y se quita de la 3
-                listaColaSRTF.imprimirLista();
-                listaColaFCFS.imprimirLista();
                 procesoAuxiliar.setTiempoEnvejecimiento(10); // Se reinicia el tiempo de envejecimiento
                 procesoAuxiliar.setNombreCola("FCFS"); //Se cambia el nombre de la cola a la que pertenece
-                System.out.println("Moviendo de cola SRTF a FCFS");
+
                 esEnvejecido=true;
             }
             if(esEnvejecido){
@@ -114,15 +110,11 @@ public class Despachador {
             boolean esEnvejecido = false;
 
             if(procesoAuxiliar.getTiempoEnvejecimiento() == 0){
-                System.out.println("Proceso auxiliar: "+procesoAuxiliar.getNombreProceso());
                 listaColaFCFS.atender(procesoAuxiliar);
                 listaColaRR.insertar(procesoAuxiliar);
                 // Se inserta en la cola 2 y se quita de la 3
-                listaColaFCFS.imprimirLista();
-                listaColaRR.imprimirLista();
                 procesoAuxiliar.setTiempoEnvejecimiento(10); // Se reinicia el tiempo de envejecimiento
                 procesoAuxiliar.setNombreCola("RR"); //Se cambia el nombre de la cola a la que pertenece
-                System.out.println("Moviendo de cola FCFS a RR");
                 esEnvejecido=true;
             }
             if(esEnvejecido){

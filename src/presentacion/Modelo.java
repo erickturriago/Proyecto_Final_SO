@@ -263,7 +263,7 @@ public class Modelo implements Cloneable{
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    pintarTabla();
+                    //pintarTabla();
                 }
             }
         });
