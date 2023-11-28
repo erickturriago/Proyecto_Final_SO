@@ -145,11 +145,11 @@ public class Despachador {
     }
     
     public void actualizarListaBloqueados() {
-    	Proceso procesoAux =listaBloqueados.getProcesoCabeza();
+    	Proceso procesoAux =listaBloqueados.getProcesoCabeza().getSiguiente();
     	System.out.println("tamano de la lista: " + listaBloqueados.getTamano());
-    	while(procesoAux.getSiguiente()!=listaBloqueados.getProcesoCabeza()) {
+    	while(procesoAux!=listaBloqueados.getProcesoCabeza() ) {
     		procesoAux.setTiempoBloqueo(procesoAux.getTiempoBloqueo()-1);
-    		if(procesoAux.getTiempoBloqueo()==0) {
+    		if(procesoAux.getTiempoBloqueo()<=0) {
     			listaBloqueados.atender();
     			insertarProcesoEspecifico((Proceso)procesoAux.clone());
     		}

@@ -28,6 +28,7 @@ public class ListaBloqueados extends Lista{
 			proceso.setSiguiente(this.getProcesoCabeza());
 			procesoAux.setSiguiente(proceso);
 		}
+		this.tamano++;
 		
 	}
 

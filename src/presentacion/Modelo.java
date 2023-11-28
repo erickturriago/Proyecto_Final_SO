@@ -68,12 +68,12 @@ public class Modelo implements Cloneable{
             public void run() {
                 while(isSistemaActivo()){
                     Proceso procesoActual = despachador.getProceso();
-
+                    System.out.println("sistema activo");
                     if(procesoActual != null){
                         System.out.println("Atendiendo: "+procesoActual.getNombreProceso()+" Cola: "+procesoActual.getNombreCola() + " Rafaga restante: "+procesoActual.getRafagaRestante());
                         getVistaPrincipal().actualizarSemaforo("Rojo");
 
-                        String nombreColaProceso = procesoActual.getNombreProceso();
+                        String nombreColaProceso = procesoActual.getNombreCola();
                         int rafagaAEjecutar = procesoActual.getRafagaRestante();
 
                         procesoActual.setRafagaEjecutadaParcial(0);
@@ -100,7 +100,7 @@ public class Modelo implements Cloneable{
 
 
                             //Comprobacion algoritmo RR (Cuantum)
-                            if(nombreColaProceso == "RR"){
+                            if(nombreColaProceso.equals("RR")){
                                 System.out.println(procesoActual.getNombreProceso() + " expulsado ");
                                 if (procesoActual.getRafagaEjecutadaParcial() == 4 && procesoActual.getRafagaRestante()>0){
                                     procesoActual.setQuantumAlcanzado(true);
@@ -143,7 +143,10 @@ public class Modelo implements Cloneable{
                             
                         }
                         else if(procesoActual.getEstado() == "Expulsado"){
-                        	
+                        	despachador.getListaColaRR().atender();
+                        	Proceso procesoInsertar = (Proceso) procesoActual.clone();
+                        	procesoInsertar.setNombreProceso(procesoInsertar.getNombreProceso()+"*");
+                        	despachador.insertarProcesoEspecifico(procesoInsertar);
                         }
                         else{
                             procesoActual.setEstado("Terminado");
@@ -162,6 +165,9 @@ public class Modelo implements Cloneable{
                             e.printStackTrace();
                         }
                         contadorReloj++;
+                        despachador.actualizarListaBloqueados();
+                        pintarTabla();
+                        pintarDiagramaGantt();
                     }
                 }
             }
