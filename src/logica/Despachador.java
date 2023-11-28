@@ -150,7 +150,8 @@ public class Despachador {
     	while(procesoAux.getSiguiente()!=listaBloqueados.getProcesoCabeza()) {
     		procesoAux.setTiempoBloqueo(procesoAux.getTiempoBloqueo()-1);
     		if(procesoAux.getTiempoBloqueo()==0) {
-    			insertarProcesoEspecifico(procesoAux);
+    			listaBloqueados.atender();
+    			insertarProcesoEspecifico((Proceso)procesoAux.clone());
     		}
     		procesoAux=procesoAux.getSiguiente();
     	}
