@@ -4,6 +4,7 @@ public class Despachador {
     private ListaRR listaColaRR = new ListaRR();
     private ListaFCFS listaColaFCFS = new ListaFCFS();
     private ListaSRTF listaColaSRTF = new ListaSRTF();
+    private ListaBloqueados listaBloqueados = new ListaBloqueados();
     private Proceso ultimoProcesoInsertado;
     int contadorProcesos = 1;
 
@@ -52,6 +53,7 @@ public class Despachador {
 
     public boolean insertarProcesoEspecifico(Proceso procesoInsertar){
         String nombreCola = procesoInsertar.getNombreCola();
+        procesoInsertar.setTiempoEnvejecimiento(10);
 
         switch (nombreCola){
             case "RR":
@@ -68,6 +70,30 @@ public class Despachador {
                 break;
         }
         return true;
+    }
+
+    public void insertarColaRR(int tiempoLlegada){
+        Proceso procesoInsertado = new Proceso(this.contadorProcesos);
+        listaColaRR.insertar(procesoInsertado);
+        procesoInsertado.setNombreCola("RR");
+        procesoInsertado.setTiempoLlegada(tiempoLlegada);
+        this.contadorProcesos++;
+    }
+
+    public void insertarColaFCFS(int tiempoLlegada){
+        Proceso procesoInsertado = new Proceso(this.contadorProcesos);
+        listaColaFCFS.insertar(procesoInsertado);
+        procesoInsertado.setNombreCola("FCFS");
+        procesoInsertado.setTiempoLlegada(tiempoLlegada);
+        this.contadorProcesos++;
+    }
+
+    public void insertarColaSRTF(int tiempoLlegada){
+        Proceso procesoInsertado = new Proceso(this.contadorProcesos);
+        listaColaSRTF.insertar(procesoInsertado);
+        procesoInsertado.setNombreCola("SRTF");
+        procesoInsertado.setTiempoLlegada(tiempoLlegada);
+        this.contadorProcesos++;
     }
 
     public void actualizarEnvejecimiento(){
@@ -153,5 +179,9 @@ public class Despachador {
 
     public ListaSRTF getListaColaSRTF() {
         return listaColaSRTF;
+    }
+    
+    public ListaBloqueados getListaBloqueados() {
+    	return listaBloqueados;
     }
 }
