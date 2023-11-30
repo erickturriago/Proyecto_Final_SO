@@ -144,22 +144,22 @@ public class VentanaPrincipal extends ApplicationFrame {
         this.labelSeccionCritica.setBackground(Color.green);
 
         this.labelCola1 = new JLabel();
-        this.labelCola1.setBounds(210,590,120,40);
+        this.labelCola1.setBounds(210,590,160,40);
         this.labelCola1.setFont(this.fontLabel);
         this.labelCola1.setHorizontalTextPosition(SwingConstants.CENTER);
-        this.labelCola1.setText("Cola 1");
+        this.labelCola1.setText("1 - RR");
 
         this.labelCola2 = new JLabel();
-        this.labelCola2.setBounds(688,590,120,40);
+        this.labelCola2.setBounds(688,590,160,40);
         this.labelCola2.setFont(this.fontLabel);
         this.labelCola2.setHorizontalTextPosition(SwingConstants.CENTER);
-        this.labelCola2.setText("Cola 2");
+        this.labelCola2.setText("2 - FCFS");
 
         this.labelCola3 = new JLabel();
-        this.labelCola3.setBounds(1156,590,120,40);
+        this.labelCola3.setBounds(1156,590,160,40);
         this.labelCola3.setFont(this.fontLabel);
         this.labelCola3.setHorizontalTextPosition(SwingConstants.CENTER);
-        this.labelCola3.setText("Cola 3");
+        this.labelCola3.setText("3 - SRTF");
 
         this.labelColaBloqueados = new JLabel();
         this.labelColaBloqueados.setBounds(1574,590,250,40);
@@ -200,6 +200,7 @@ public class VentanaPrincipal extends ApplicationFrame {
         modelTablaTiempos.addColumn("T.Retorno");
         modelTablaTiempos.addColumn("T.Espera");
         modelTablaTiempos.addColumn("Estado");
+        modelTablaTiempos.addColumn("C. Origen");
 
         tablaTiempos = new JTable(modelTablaTiempos);
         tablaTiempos.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);

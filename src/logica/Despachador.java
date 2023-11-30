@@ -53,6 +53,7 @@ public class Despachador {
 
     public boolean insertarProcesoEspecifico(Proceso procesoInsertar){
         String nombreCola = procesoInsertar.getNombreCola();
+        procesoInsertar.setTiempoEnvejecimiento(10);
 
         switch (nombreCola){
             case "RR":
@@ -71,22 +72,28 @@ public class Despachador {
         return true;
     }
 
-    public void insertarColaRR(){
+    public void insertarColaRR(int tiempoLlegada){
         Proceso procesoInsertado = new Proceso(this.contadorProcesos);
         listaColaRR.insertar(procesoInsertado);
         procesoInsertado.setNombreCola("RR");
+        procesoInsertado.setTiempoLlegada(tiempoLlegada);
+        this.contadorProcesos++;
     }
 
-    public void insertarColaFCFS(){
+    public void insertarColaFCFS(int tiempoLlegada){
         Proceso procesoInsertado = new Proceso(this.contadorProcesos);
         listaColaFCFS.insertar(procesoInsertado);
         procesoInsertado.setNombreCola("FCFS");
+        procesoInsertado.setTiempoLlegada(tiempoLlegada);
+        this.contadorProcesos++;
     }
 
-    public void insertarColaSRTF(){
+    public void insertarColaSRTF(int tiempoLlegada){
         Proceso procesoInsertado = new Proceso(this.contadorProcesos);
         listaColaSRTF.insertar(procesoInsertado);
         procesoInsertado.setNombreCola("SRTF");
+        procesoInsertado.setTiempoLlegada(tiempoLlegada);
+        this.contadorProcesos++;
     }
 
     public void actualizarEnvejecimiento(){
@@ -160,19 +167,6 @@ public class Despachador {
             }
         }
         return false;
-    }
-    
-    public void actualizarListaBloqueados() {
-    	Proceso procesoAux =listaBloqueados.getProcesoCabeza().getSiguiente();
-    	//System.out.println("tamano de la lista: " + listaBloqueados.getTamano());
-    	while(procesoAux!=listaBloqueados.getProcesoCabeza() ) {
-    		procesoAux.setTiempoBloqueo(procesoAux.getTiempoBloqueo()-1);
-    		if(procesoAux.getTiempoBloqueo()<=0) {
-    			listaBloqueados.atender();
-    			insertarProcesoEspecifico((Proceso)procesoAux.clone());
-    		}
-    		procesoAux=procesoAux.getSiguiente();
-    	}
     }
 
     public ListaRR getListaColaRR() {

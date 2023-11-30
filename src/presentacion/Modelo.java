@@ -52,8 +52,6 @@ public class Modelo implements Cloneable{
         procesoInsertado.setTiempoLlegada(this.contadorReloj);
         pintarTabla();
     }
-
-
     public void insertarClientesIniciales(){
         //int cantClientes = (int)(Math.random()*10+1);
         int cantClientes = 0;
@@ -86,7 +84,7 @@ public class Modelo implements Cloneable{
                         procesoActual.setRafagaRestante(procesoActual.getRafaga() - procesoActual.getRafagaEjecutadaTotal());
                         procesoActual.setTiempoComienzo(contadorReloj);
 
-                        procesosTabla.add(procesoActual);
+                        insertarTabla(procesoActual);
                         //pintarTabla();
 
                         for(int i=0;i<rafagaAEjecutar;i++){
@@ -103,7 +101,8 @@ public class Modelo implements Cloneable{
                             System.out.println("Reloj: "+contadorReloj);
 
                             ventanaPrincipal.getLabelContadorCiclo().setText(""+contadorReloj);
-                            procesoActual.setEstado("En ejecución");
+                            procesoActual.setEstado("En ejecucion");
+                            actualizarTabla(procesoActual);
                             procesoActual.setRafagaEjecutadaTotal(procesoActual.getRafagaEjecutadaTotal()+1);
                             procesoActual.setRafagaEjecutadaParcial(procesoActual.getRafagaEjecutadaParcial()+1);
                             procesoActual.setRafagaRestante(procesoActual.getRafaga() - procesoActual.getRafagaEjecutadaTotal());
@@ -113,9 +112,10 @@ public class Modelo implements Cloneable{
                             //Comprobacion algoritmo RR (Cuantum)
                             if(nombreColaProceso.equals("RR")){
                                 //System.out.println(procesoActual.getNombreProceso() + " expulsado ");
-                                if (procesoActual.getRafagaEjecutadaParcial() == 4 && procesoActual.getRafagaRestante()>0){
+                                if ( procesoActual.getRafagaEjecutadaParcial() == 4 && procesoActual.getRafagaRestante()>0){
                                     procesoActual.setQuantumAlcanzado(true);
-                                    System.out.println("Proceso expulsado por Quantum");
+                                    System.out.println("Proceso expulsado por Quantum - Rafaga restante: "+procesoActual.getRafagaRestante() + " Rafaga parciaL "+procesoActual.getRafagaEjecutadaParcial());
+                                    System.out.println("Rafaga: "+procesoActual.getRafaga() + " RafagaTotal: "+procesoActual.getRafagaEjecutadaTotal());
                                     procesoActual.setEstado("Expulsado R");
                                     break;
                                 }
@@ -150,6 +150,8 @@ public class Modelo implements Cloneable{
                         procesoActual.setTiempoFinal(procesoActual.getRafagaEjecutadaParcial() + procesoActual.getTiempoComienzo());
                         procesoActual.setTiempoRetorno(procesoActual.getTiempoFinal() - procesoActual.getTiempoLlegada());
                         procesoActual.setTiempoEspera(procesoActual.getTiempoRetorno() - procesoActual.getRafagaEjecutadaTotal());
+
+                        procesoActual.setRafagaEjecutadaParcial(0);
 
                         if(procesoActual.getEstado() == "Bloqueado"){
                             System.out.println("Enviando a la cola de bloqueados");
@@ -189,27 +191,15 @@ public class Modelo implements Cloneable{
         hiloAtender.start();
     }
 
-    public void actualizarSeccionCritica(Proceso proceso){
-        if(proceso == null){
-            getVistaPrincipal().getLabelSeccionCritica().setBackground(Color.green);
-            getVistaPrincipal().getLabelSeccionCritica().setText("Sec. Critica Libre");
-            getVistaPrincipal().getLabelSeccionCritica().setForeground(Color.black);
-        }
-        else{
-            getVistaPrincipal().getLabelSeccionCritica().setBackground(Color.red);
-            getVistaPrincipal().getLabelSeccionCritica().setText(proceso.getNombreProceso()+" en Sec. Critica");
-            getVistaPrincipal().getLabelSeccionCritica().setForeground(Color.white);
-        }
-
-    }
-
     public void retornarProcesoCola(Proceso procesoRetorno){
 
         Proceso procesoInsertar = (Proceso) procesoRetorno.clone();
 
         procesoInsertar.setNombreProceso(procesoInsertar.getNombreProceso()+"*");
-        procesoInsertar.setRafaga(procesoRetorno.getRafagaRestante());
+        //procesoInsertar.setRafaga(procesoRetorno.getRafagaRestante());
         procesoInsertar.setTiempoLlegada(procesoRetorno.getTiempoLlegada());
+        procesoInsertar.setNombreCola(procesoRetorno.getNombreCola());
+        procesoInsertar.setEstado("Listo");
 
         procesoInsertar.setTiempoEspera(0);
         procesoInsertar.setTiempoRetorno(0);
@@ -221,6 +211,12 @@ public class Modelo implements Cloneable{
 
     public void insertarTabla(Proceso procesoInsertar){
         Proceso procesoCopia = (Proceso) procesoInsertar.clone();
+        procesoCopia.setEstado("Listo");
+        procesoCopia.setTiempoEspera(0);
+        procesoCopia.setTiempoRetorno(0);
+        procesoCopia.setTiempoComienzo(0);
+        procesoCopia.setTiempoFinal(0);
+
         this.procesosTabla.add(procesoCopia);
     }
 
@@ -238,26 +234,6 @@ public class Modelo implements Cloneable{
                 return;
             }
         }
-    }
-
-    public void insertarPorQuantum(Proceso proceso){
-
-        Proceso clon = (Proceso) proceso.clone();
-
-        clon.setEstado("Listo");
-        //System.out.println("ID proceso clone: "+clon.getIdProceso());
-        clon.setTiempoComienzo(0);
-        clon.setTiempoFinal(0);
-        clon.setTiempoRetorno(0);
-        clon.setTiempoEspera(0);
-        clon.setNombreProceso(proceso.getNombreProceso()+"*");
-        clon.setQuantumAlcanzado(false);
-
-        if(clon.getRafagaRestante()>0){
-            //listaTurnos.insertar(clon);
-            insertarTabla(clon);
-        }
-
     }
 
     public void iniciarAtencionBloqueados(){
@@ -285,10 +261,7 @@ public class Modelo implements Cloneable{
                             clon.setTiempoRetorno(0);
                             clon.setTiempoEspera(0);
                             clon.setNombreProceso(proceso.getNombreProceso()+"'");
-
-                            clon.setRafaga(proceso.getRafagaRestante());
                             clon.setTiempoLlegada(proceso.getTiempoLlegada());
-
 
                             despachador.getListaBloqueados().atender(proceso);
                             despachador.insertarProcesoEspecifico(clon);
@@ -303,60 +276,6 @@ public class Modelo implements Cloneable{
         hiloAtencionBloqueados.start();
     }
 
-    public void iniciarPintarCola(){
-        hiloPintarCola = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(isSistemaActivo()){
-                    try {
-                        Thread.sleep(cicloReloj); // Agregar un retraso de 200 ms entre cada elemento
-
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    pintarCola();
-                }
-            }
-        });
-        hiloPintarCola.start();
-    }
-
-    public void iniciarPintarTabla(){
-        hiloPintarTabla = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(isSistemaActivo() ){
-                    try {
-
-                        Thread.sleep(cicloReloj); // Agregar un retraso de 200 ms entre cada elemento
-
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    //pintarTabla();
-                }
-            }
-        });
-        hiloPintarTabla.start();
-    }
-    public void iniciarDiagramaGantt(){
-        hiloPintarDiagramaGantt = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(isSistemaActivo() ){
-                    try {
-
-                        Thread.sleep(cicloReloj); // Agregar un retraso de 200 ms entre cada elemento
-
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    pintarDiagramaGantt();
-                }
-            }
-        });
-        hiloPintarDiagramaGantt.start();
-    }
     public void pintarTabla(){
 
         //Pintar tabla cola RR
@@ -411,19 +330,17 @@ public class Modelo implements Cloneable{
             this.getVistaPrincipal().getModelTablaTiempos().addRow(new Object[]{
                     procesosTabla.get(i).getNombreProceso(),
                     procesosTabla.get(i).getTiempoLlegada(),
-                    procesosTabla.get(i).getRafaga(),
+                    procesosTabla.get(i).getRafagaRestante(),
                     procesosTabla.get(i).getTiempoComienzo(),
                     procesosTabla.get(i).getTiempoFinal(),
                     procesosTabla.get(i).getTiempoRetorno(),
                     procesosTabla.get(i).getTiempoEspera(),
-                    procesosTabla.get(i).getEstado()
+                    procesosTabla.get(i).getEstado(),
+                    procesosTabla.get(i).getNombreCola()
             });
         }
     }
 
-    public void pintarCola(){
-        System.out.println("Pintar cola");
-    }
     public void pintarDiagramaGantt(){
         final IntervalCategoryDataset dataset = createSampleDataset();
         // create the chart...
@@ -467,7 +384,7 @@ public class Modelo implements Cloneable{
                 t.addSubtask(t2);
                 s.add(t);
             }
-            if(procesosTabla.get(i).getEstado()=="En ejecución"){
+            if(procesosTabla.get(i).getEstado()=="En ejecucion"){
                 //System.out.println("Pintando proceso en ejecucion");
                 final Task t = new Task(""+procesosTabla.get(i).getNombreProceso(), new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), contadorReloj));
                 final Task t1 = new Task("esperando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), procesosTabla.get(i).getTiempoComienzo()));
@@ -503,15 +420,15 @@ public class Modelo implements Cloneable{
     }
 
     public void insertCola1(){
-        despachador.insertarColaRR();
+        despachador.insertarColaRR(this.contadorReloj);
         pintarTabla();
     }
     public void insertCola2(){
-        despachador.insertarColaFCFS();
+        despachador.insertarColaFCFS(this.contadorReloj);
         pintarTabla();
     }
     public void insertCola3(){
-        despachador.insertarColaSRTF();
+        despachador.insertarColaSRTF(this.contadorReloj);
         pintarTabla();
     }
 

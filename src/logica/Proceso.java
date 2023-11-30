@@ -18,9 +18,9 @@ public class Proceso implements Cloneable,IOProceso{
   public Proceso(int id){
     this.idProceso = id;
     this.nombreProceso = "P" + id;
-    this.rafaga= (int)(Math.random()*10+1);
+    this.rafaga= (int)(6 + (Math.random()*10+1));
     this.rafagaRestante=this.rafaga;
-    this.tiempoLlegada = (int)(Math.random()*10+1);
+    this.tiempoLlegada = 0;
     this.estado= "Listo";
     this.tiempoBloqueo=0;
     this.tiempoEnvejecimiento = 10;
