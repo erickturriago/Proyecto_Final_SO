@@ -13,6 +13,7 @@ public class Proceso implements Cloneable,IOProceso{
   private int rafagaEjecutadaParcial = 0;
   private int tiempoEnvejecimiento = 10;
   private boolean quantumAlcanzado = false;
+  //private boolean
 
   public Proceso(int id){
     this.idProceso = id;

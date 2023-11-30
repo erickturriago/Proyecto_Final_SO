@@ -13,6 +13,7 @@ import org.jfree.data.gantt.TaskSeriesCollection;
 import org.jfree.data.time.SimpleTimePeriod;
 
 import java.awt.*;
+import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,7 +56,7 @@ public class Modelo implements Cloneable{
 
     public void insertarClientesIniciales(){
         //int cantClientes = (int)(Math.random()*10+1);
-        int cantClientes = 14;
+        int cantClientes = 0;
         for(int i=0;i<cantClientes;i++){
             this.agregarProceso();
             //insertarTabla(listaTurnos.getUltimoAgregado());
@@ -68,9 +69,14 @@ public class Modelo implements Cloneable{
             public void run() {
                 while(isSistemaActivo()){
                     Proceso procesoActual = despachador.getProceso();
-                    System.out.println("sistema activo");
+                    //System.out.println("sistema activo");
                     if(procesoActual != null){
-                        System.out.println("Atendiendo: "+procesoActual.getNombreProceso()+" Cola: "+procesoActual.getNombreCola() + " Rafaga restante: "+procesoActual.getRafagaRestante());
+
+                        System.out.println("-------------------------------------------------------------------------------------------------------------");
+
+                        String nombreProceso = procesoActual.getNombreProceso();
+                        String nombreCola = procesoActual.getNombreCola();
+                        System.out.println("Atendiendo proceso: "+ nombreProceso+" Cola: "+ nombreCola+ " Rafaga restante: "+procesoActual.getRafagaRestante());
                         getVistaPrincipal().actualizarSemaforo("Rojo");
 
                         String nombreColaProceso = procesoActual.getNombreCola();
@@ -81,7 +87,7 @@ public class Modelo implements Cloneable{
                         procesoActual.setTiempoComienzo(contadorReloj);
 
                         procesosTabla.add(procesoActual);
-                        pintarTabla();
+                        //pintarTabla();
 
                         for(int i=0;i<rafagaAEjecutar;i++){
 
@@ -90,6 +96,11 @@ public class Modelo implements Cloneable{
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
+
+                            contadorReloj++;
+
+                            System.out.println("Ciclo "+(i+1));
+                            System.out.println("Reloj: "+contadorReloj);
 
                             ventanaPrincipal.getLabelContadorCiclo().setText(""+contadorReloj);
                             procesoActual.setEstado("En ejecución");
@@ -101,22 +112,22 @@ public class Modelo implements Cloneable{
 
                             //Comprobacion algoritmo RR (Cuantum)
                             if(nombreColaProceso.equals("RR")){
-                                System.out.println(procesoActual.getNombreProceso() + " expulsado ");
+                                //System.out.println(procesoActual.getNombreProceso() + " expulsado ");
                                 if (procesoActual.getRafagaEjecutadaParcial() == 4 && procesoActual.getRafagaRestante()>0){
                                     procesoActual.setQuantumAlcanzado(true);
-                                    procesoActual.setEstado("Expulsado");
+                                    System.out.println("Proceso expulsado por Quantum");
+                                    procesoActual.setEstado("Expulsado R");
                                     break;
                                 }
                             }
 
                             int randomBloqueo = (int)(Math.random()*100+1);
                             //System.out.println("For ciclo: "+(i+1));
-                            if(randomBloqueo % 7  == 0 && procesoActual.getRafagaRestante()>0){
+                            if(randomBloqueo % 27  == 0 && procesoActual.getRafagaRestante()>0){
                                 int tiempoBloqueo = (int)(Math.random()*8+4);
                                 procesoActual.setTiempoBloqueo(tiempoBloqueo);
                                 procesoActual.setEstado("Bloqueado");
-                                System.out.println("Bloqueado");
-                                despachador.getListaBloqueados().insertar((Proceso) procesoActual.clone());
+                                System.out.println("Proceso bloqueado");
                                 break;
                             }
 
@@ -124,15 +135,16 @@ public class Modelo implements Cloneable{
                             //Comprobar si llegó un proceso de mayor prioridad
                             if(despachador.checkProcesoMayorPrioridad(procesoActual)){
                                 System.out.println("Llegó proceso con mayor prioridad");
+                                procesoActual.setEstado("Expulsado P");
                                 break;
                             }
 
-                            contadorReloj++;
-                            System.out.println("Ciclo: "+(i+1));
+                            //System.out.println("Ciclo: "+(i+1));
                             despachador.actualizarEnvejecimiento();
-                            despachador.actualizarListaBloqueados();
-                            pintarTabla();
+                            //despachador.actualizarListaBloqueados();
                             pintarDiagramaGantt();
+                            pintarTabla();
+
                         }
                         //Calculos de tiempos
                         procesoActual.setTiempoFinal(procesoActual.getRafagaEjecutadaParcial() + procesoActual.getTiempoComienzo());
@@ -140,15 +152,17 @@ public class Modelo implements Cloneable{
                         procesoActual.setTiempoEspera(procesoActual.getTiempoRetorno() - procesoActual.getRafagaEjecutadaTotal());
 
                         if(procesoActual.getEstado() == "Bloqueado"){
-                            
+                            System.out.println("Enviando a la cola de bloqueados");
+                            despachador.getListaBloqueados().insertar(procesoActual);
+                            despachador.getListaBloqueados().imprimirLista();
+                            //despachador.getListaBloqueados().insertar((Proceso) procesoActual.clone());
                         }
-                        else if(procesoActual.getEstado() == "Expulsado"){
-                        	despachador.getListaColaRR().atender();
-                        	Proceso procesoInsertar = (Proceso) procesoActual.clone();
-                        	procesoInsertar.setNombreProceso(procesoInsertar.getNombreProceso()+"*");
-                        	despachador.insertarProcesoEspecifico(procesoInsertar);
+                        else if(procesoActual.getEstado() == "Expulsado P" || procesoActual.getEstado() == "Expulsado R"){
+                            System.out.println("Retornando a la cola de origen (Expulsado)");
+                            retornarProcesoCola(procesoActual);
                         }
                         else{
+                            System.out.println("Proceso terminó sin problema");
                             procesoActual.setEstado("Terminado");
                         }
 
@@ -165,9 +179,9 @@ public class Modelo implements Cloneable{
                             e.printStackTrace();
                         }
                         contadorReloj++;
-                        despachador.actualizarListaBloqueados();
-                        pintarTabla();
+                        //despachador.actualizarListaBloqueados();
                         pintarDiagramaGantt();
+                        pintarTabla();
                     }
                 }
             }
@@ -187,6 +201,22 @@ public class Modelo implements Cloneable{
             getVistaPrincipal().getLabelSeccionCritica().setForeground(Color.white);
         }
 
+    }
+
+    public void retornarProcesoCola(Proceso procesoRetorno){
+
+        Proceso procesoInsertar = (Proceso) procesoRetorno.clone();
+
+        procesoInsertar.setNombreProceso(procesoInsertar.getNombreProceso()+"*");
+        procesoInsertar.setRafaga(procesoRetorno.getRafagaRestante());
+        procesoInsertar.setTiempoLlegada(procesoRetorno.getTiempoLlegada());
+
+        procesoInsertar.setTiempoEspera(0);
+        procesoInsertar.setTiempoRetorno(0);
+        procesoInsertar.setTiempoComienzo(0);
+        procesoInsertar.setTiempoFinal(0);
+
+        despachador.insertarProcesoEspecifico(procesoInsertar);
     }
 
     public void insertarTabla(Proceso procesoInsertar){
@@ -228,8 +258,6 @@ public class Modelo implements Cloneable{
             insertarTabla(clon);
         }
 
-
-
     }
 
     public void iniciarAtencionBloqueados(){
@@ -237,7 +265,38 @@ public class Modelo implements Cloneable{
             @Override
             public void run() {
                 while(isSistemaActivo()){
-                    System.out.println("Gestion bloqueados");
+                    try {
+                        Thread.sleep(cicloReloj);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    ArrayList<Proceso> procesosBloqueados = despachador.getListaBloqueados().listarProcesos();
+                    for(int i = 0; i< procesosBloqueados.size(); i++){
+                        Proceso proceso = procesosBloqueados.get(i);
+                        if(proceso.getTiempoBloqueo()>1){
+                            proceso.setTiempoBloqueo(proceso.getTiempoBloqueo()-1);
+                        }
+                        else{
+                            Proceso clon = (Proceso) proceso.clone();
+                            clon.setEstado("Listo");
+                            //System.out.println("ID proceso clone: "+clon.getIdProceso());
+                            clon.setTiempoComienzo(0);
+                            clon.setTiempoFinal(0);
+                            clon.setTiempoRetorno(0);
+                            clon.setTiempoEspera(0);
+                            clon.setNombreProceso(proceso.getNombreProceso()+"'");
+
+                            clon.setRafaga(proceso.getRafagaRestante());
+                            clon.setTiempoLlegada(proceso.getTiempoLlegada());
+
+
+                            despachador.getListaBloqueados().atender(proceso);
+                            despachador.insertarProcesoEspecifico(clon);
+                            pintarTabla();
+
+                            //insertarTabla(clon);
+                        }
+                    }
                 }
             }
         });
@@ -352,7 +411,7 @@ public class Modelo implements Cloneable{
             this.getVistaPrincipal().getModelTablaTiempos().addRow(new Object[]{
                     procesosTabla.get(i).getNombreProceso(),
                     procesosTabla.get(i).getTiempoLlegada(),
-                    procesosTabla.get(i).getRafagaRestante(),
+                    procesosTabla.get(i).getRafaga(),
                     procesosTabla.get(i).getTiempoComienzo(),
                     procesosTabla.get(i).getTiempoFinal(),
                     procesosTabla.get(i).getTiempoRetorno(),
@@ -399,7 +458,7 @@ public class Modelo implements Cloneable{
             //System.out.println("proceso :" + procesosTabla.get(i).getNombreProceso() + " estado: " + procesosTabla.get(i).getEstado());
         }
         for(int i=0; i<procesosTabla.size(); i++){
-            System.out.println(procesosTabla.get(i).getNombreProceso() + " " + procesosTabla.get(i).getEstado());
+            //System.out.println(procesosTabla.get(i).getNombreProceso() + " " + procesosTabla.get(i).getEstado());
             if(procesosTabla.get(i).getEstado()=="Listo"){
                 final Task t = new Task(""+procesosTabla.get(i).getNombreProceso(), new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), contadorReloj));
                 final Task t1 = new Task("esperando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), contadorReloj));
@@ -422,12 +481,12 @@ public class Modelo implements Cloneable{
                 final Task t = new Task(""+procesosTabla.get(i).getNombreProceso(), new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), procesosTabla.get(i).getTiempoFinal()));
                 final Task t1 = new Task("esperando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), procesosTabla.get(i).getTiempoComienzo()));
                 final Task t2 = new Task("ejecutando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoComienzo(), procesosTabla.get(i).getTiempoFinal()));
-                System.out.println("rafaga ejecutada parcial del proceso Bloqueado: "+procesosTabla.get(i).getTiempoComienzo() + procesosTabla.get(i).getRafagaEjecutadaParcial());
+                //System.out.println("rafaga ejecutada parcial del proceso Bloqueado: "+procesosTabla.get(i).getTiempoComienzo() + procesosTabla.get(i).getRafagaEjecutadaParcial());
                 t.addSubtask(t1);
                 t.addSubtask(t2);
                 s.add(t);
             }
-            if(procesosTabla.get(i).getEstado()=="Terminado" || procesosTabla.get(i).getEstado()=="Expulsado"){
+            if(procesosTabla.get(i).getEstado()=="Terminado" || procesosTabla.get(i).getEstado()=="Expulsado R" || procesosTabla.get(i).getEstado()=="Expulsado P"){
                 final Task t = new Task(""+procesosTabla.get(i).getNombreProceso(), new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(), contadorReloj));
                 final Task t1 = new Task("esperando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoLlegada(),procesosTabla.get(i).getTiempoComienzo()));
                 final Task t2 = new Task("ejecutando", new SimpleTimePeriod(procesosTabla.get(i).getTiempoComienzo(), procesosTabla.get(i).getTiempoFinal()));
@@ -441,6 +500,19 @@ public class Modelo implements Cloneable{
     
         //model.removeAll();
         return model;
+    }
+
+    public void insertCola1(){
+        despachador.insertarColaRR();
+        pintarTabla();
+    }
+    public void insertCola2(){
+        despachador.insertarColaFCFS();
+        pintarTabla();
+    }
+    public void insertCola3(){
+        despachador.insertarColaSRTF();
+        pintarTabla();
     }
 
     public boolean isSistemaActivo() {

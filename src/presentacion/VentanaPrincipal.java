@@ -25,6 +25,8 @@ public class VentanaPrincipal extends ApplicationFrame {
     private JButton btnAgregarProceso;
     private JButton btnAtender;
     private JButton btnIniciarDetener;
+
+    private JButton insertCola1,insertCola2,insertCola3;
     DefaultTableModel modelTablaTiempos,modelTablaBloqueado,modelTablaCola1,modelTablaCola2,modelTablaCola3;
     JTable tablaCola1;
     JTable tablaCola2;
@@ -39,6 +41,7 @@ public class VentanaPrincipal extends ApplicationFrame {
     JLabel labelSeccionCritica;
     JLabel labelSemaforo;
     JLabel labelCola1,labelCola2,labelCola3,labelColaTiempos,labelColaBloqueados;
+
 
     private JLabel labelContadorCiclo;
     public VentanaPrincipal(Modelo modelo) {
@@ -82,6 +85,19 @@ public class VentanaPrincipal extends ApplicationFrame {
         this.btnIniciarDetener = new JButton("INICIAR");
         this.btnIniciarDetener.setBounds(900,465,120,40);
         this.btnIniciarDetener.setFont(fontButton);
+
+
+        this.insertCola1 = new JButton("insertCola1");
+        this.insertCola1.setBounds(50,580,120,40);
+        this.insertCola1.setFont(fontButton);
+
+        this.insertCola2 = new JButton("insertCola2");
+        this.insertCola2.setBounds(528,580,120,40);
+        this.insertCola2.setFont(fontButton);
+
+        this.insertCola3 = new JButton("insertCola3");
+        this.insertCola3.setBounds(996,580,120,40);
+        this.insertCola3.setFont(fontButton);
 
         //TextFields
 
@@ -246,10 +262,10 @@ public class VentanaPrincipal extends ApplicationFrame {
         TableColumnModel columnModelBloqueados = tablaBloqueados.getColumnModel();
 
         for (int i = 0; i < tablaCola1.getColumnCount(); i++) {
-            columnModelCola1.getColumn(i).setPreferredWidth(100);
-            columnModelCola2.getColumn(i).setPreferredWidth(100);
-            columnModelCola3.getColumn(i).setPreferredWidth(100);
-            columnModelBloqueados.getColumn(i).setPreferredWidth(132);
+            columnModelCola1.getColumn(i).setPreferredWidth(98);
+            columnModelCola2.getColumn(i).setPreferredWidth(98);
+            columnModelCola3.getColumn(i).setPreferredWidth(98);
+            columnModelBloqueados.getColumn(i).setPreferredWidth(98);
             tablaCola1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
             tablaCola2.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
             tablaCola3.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
@@ -286,6 +302,9 @@ public class VentanaPrincipal extends ApplicationFrame {
         this.add(this.labelCola2);
         this.add(this.labelCola3);
         this.add(this.labelColaBloqueados);
+        this.add(this.insertCola1);
+        this.add(this.insertCola2);
+        this.add(this.insertCola3);
         //this.panelTabla.add(this.scrollPaneBloqueados);
         //this.panelTabla.add(this.btnAtender);
         //this.panelTabla.add(this.btnAgregarClientes);
@@ -360,6 +379,9 @@ public class VentanaPrincipal extends ApplicationFrame {
         this.btnAtender.addActionListener(getControl());
         this.btnAgregarProceso.addActionListener(getControl());
         this.btnIniciarDetener.addActionListener(getControl());
+        this.insertCola1.addActionListener(getControl());
+        this.insertCola2.addActionListener(getControl());
+        this.insertCola3.addActionListener(getControl());
     }
 
     public JLabel getLabelContadorCiclo() {

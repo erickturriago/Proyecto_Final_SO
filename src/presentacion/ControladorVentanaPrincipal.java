@@ -28,7 +28,7 @@ public class ControladorVentanaPrincipal implements ActionListener {
                 //ventana.getModelo().iniciarPintarCola();
                 //ventana.getModelo().iniciarPintarTabla();
                 //ventana.getModelo().iniciarDiagramaGantt();
-                //ventana.getModelo().iniciarAtencionBloqueados();
+                ventana.getModelo().iniciarAtencionBloqueados();
 
                 if(boton.getText().equals("INICIAR")){
                     boton.setText("DETENER");
@@ -36,6 +36,15 @@ public class ControladorVentanaPrincipal implements ActionListener {
                 else{
                     boton.setText("INICIAR");
                 }
+            }
+            if(boton.getText().equals("insertCola1")){
+                ventana.getModelo().insertCola1();
+            }
+            if(boton.getText().equals("insertCola2")){
+                ventana.getModelo().insertCola2();
+            }
+            if(boton.getText().equals("insertCola3")){
+                ventana.getModelo().insertCola3();
             }
         }
         return;

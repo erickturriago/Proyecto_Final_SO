@@ -71,6 +71,24 @@ public class Despachador {
         return true;
     }
 
+    public void insertarColaRR(){
+        Proceso procesoInsertado = new Proceso(this.contadorProcesos);
+        listaColaRR.insertar(procesoInsertado);
+        procesoInsertado.setNombreCola("RR");
+    }
+
+    public void insertarColaFCFS(){
+        Proceso procesoInsertado = new Proceso(this.contadorProcesos);
+        listaColaFCFS.insertar(procesoInsertado);
+        procesoInsertado.setNombreCola("FCFS");
+    }
+
+    public void insertarColaSRTF(){
+        Proceso procesoInsertado = new Proceso(this.contadorProcesos);
+        listaColaSRTF.insertar(procesoInsertado);
+        procesoInsertado.setNombreCola("SRTF");
+    }
+
     public void actualizarEnvejecimiento(){
         listaColaSRTF.notificarEnvejecimientoObservadores();
         listaColaFCFS.notificarEnvejecimientoObservadores();
@@ -146,7 +164,7 @@ public class Despachador {
     
     public void actualizarListaBloqueados() {
     	Proceso procesoAux =listaBloqueados.getProcesoCabeza().getSiguiente();
-    	System.out.println("tamano de la lista: " + listaBloqueados.getTamano());
+    	//System.out.println("tamano de la lista: " + listaBloqueados.getTamano());
     	while(procesoAux!=listaBloqueados.getProcesoCabeza() ) {
     		procesoAux.setTiempoBloqueo(procesoAux.getTiempoBloqueo()-1);
     		if(procesoAux.getTiempoBloqueo()<=0) {
